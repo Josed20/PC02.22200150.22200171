@@ -1,9 +1,24 @@
 const routes = [
+  // Ruta de Login (sin layout)
+  {
+    path: '/login',
+    component: () => import('pages/LoginPage.vue')
+  },
+
+  // Rutas protegidas con MainLayout
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    meta: { requiresAuth: true },
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      {
+        path: '',
+        redirect: '/digimons'
+      },
+      {
+        path: 'digimons',
+        component: () => import('pages/IndexPage.vue')
+      }
     ]
   },
 

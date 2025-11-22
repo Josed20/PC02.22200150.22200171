@@ -26,5 +26,22 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  // Protección de rutas
+  Router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem('token')
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+
+    if (requiresAuth && !token) {
+      // Si la ruta requiere autenticación y no hay token, redirigir a login
+      next('/login')
+    } else if (to.path === '/login' && token) {
+      // Si ya está autenticado y intenta ir a login, redirigir a digimons
+      next('/digimons')
+    } else {
+      // En cualquier otro caso, permitir navegación
+      next()
+    }
+  })
+
   return Router
 })

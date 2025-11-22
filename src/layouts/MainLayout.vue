@@ -20,10 +20,11 @@
           flat
           dense
           round
-          icon="info"
-          aria-label="Info"
+          icon="logout"
+          aria-label="Cerrar Sesión"
+          @click="handleLogout"
         >
-          <q-tooltip>Catálogo Universitario</q-tooltip>
+          <q-tooltip>Cerrar Sesión</q-tooltip>
         </q-btn>
       </q-toolbar>
     </q-header>
@@ -45,7 +46,7 @@
         <q-item
           clickable
           v-ripple
-          to="/"
+          to="/digimons"
           exact
           active-class="bg-primary text-white"
         >
@@ -55,6 +56,22 @@
           <q-item-section>
             <q-item-label>Inicio</q-item-label>
             <q-item-label caption>Catálogo de Digimons</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator class="q-my-md" />
+
+        <q-item
+          clickable
+          v-ripple
+          @click="handleLogout"
+        >
+          <q-item-section avatar>
+            <q-icon name="logout" color="negative" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Cerrar Sesión</q-item-label>
+            <q-item-label caption>Salir de la aplicación</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -68,15 +85,52 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { useAuthStore } from 'stores/auth'
 
 defineOptions({
   name: 'MainLayout'
 })
 
+const router = useRouter()
+const $q = useQuasar()
+const authStore = useAuthStore()
+
 const leftDrawerOpen = ref(false)
 
 function toggleLeftDrawer () {
   leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+function handleLogout () {
+  $q.dialog({
+    title: 'Cerrar Sesión',
+    message: '¿Estás seguro que deseas cerrar sesión?',
+    cancel: {
+      label: 'Cancelar',
+      color: 'grey',
+      flat: true
+    },
+    ok: {
+      label: 'Cerrar Sesión',
+      color: 'negative',
+      flat: true
+    },
+    persistent: false
+  }).onOk(() => {
+    authStore.logout()
+
+    $q.notify({
+      type: 'info',
+      message: 'Sesión cerrada',
+      caption: 'Hasta pronto',
+      position: 'top',
+      timeout: 2000
+    })
+
+    router.push('/login')
+  })
 }
 </script>
 
